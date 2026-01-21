@@ -60,6 +60,7 @@ func main() {
 go run ./cmd/auth-check
 go run ./cmd/price-snapshot
 go run ./cmd/request-read
+go run ./cmd/order-read
 ```
 
 ## 環境変数（サンプル）
@@ -73,6 +74,11 @@ go run ./cmd/request-read
 - `TACHIBANASHI_ISSUE_CODE`（request-read 用、任意）
 - `TACHIBANASHI_GENBUTU_HITUKE_INDEX`（request-read 用、任意、3〜5）
 - `TACHIBANASHI_SINYOU_HITUKE_INDEX`（request-read 用、任意、0〜5）
+- `TACHIBANASHI_ORDER_ISSUE_CODE`（order-read 用、任意）
+- `TACHIBANASHI_ORDER_SIKKOU_DAY`（order-read 用、任意）
+- `TACHIBANASHI_ORDER_STATUS`（order-read 用、任意）
+- `TACHIBANASHI_ORDER_NUMBER`（order-read 詳細用、任意）
+- `TACHIBANASHI_EIGYOU_DAY`（order-read 詳細用、任意）
 - `TACHIBANASHI_TIMEOUT`（任意）
 - `TACHIBANASHI_USER_AGENT`（任意）
 - `TACHIBANASHI_INSECURE_TLS`（任意、true/1 で検証無効）
@@ -82,11 +88,16 @@ go run ./cmd/request-read
 - `go run ./cmd/auth-check` でログイン疎通
 - `go run ./cmd/price-snapshot` で時価取得
 - `go run ./cmd/request-read` で口座・建玉・余力の読み取り
+- `go run ./cmd/order-read` で注文一覧の読み取り
 - 余力詳細を出す場合は `TACHIBANASHI_GENBUTU_HITUKE_INDEX` / `TACHIBANASHI_SINYOU_HITUKE_INDEX` を設定
+- 注文詳細を出す場合は `TACHIBANASHI_ORDER_NUMBER` / `TACHIBANASHI_EIGYOU_DAY` を設定
 
 ## Base URL
 - prod: `https://kabuka.e-shiten.jp/e_api_v4r8/`
 - demo: `https://demo-kabuka.e-shiten.jp/e_api_v4r8/`
+
+## 注意事項
+- API の日本語メッセージは Shift_JIS の可能性があるため、ライブラリ側で UTF-8 へ正規化して扱います
 
 ## 開発
 ```bash

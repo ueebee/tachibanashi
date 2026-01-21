@@ -6,14 +6,18 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"mime"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	terrors "github.com/ueebee/tachibanashi/errors"
 	"github.com/ueebee/tachibanashi/event"
+	"golang.org/x/text/encoding/japanese"
+	"golang.org/x/text/transform"
 )
 
 func (c *Client) DoJSON(ctx context.Context, method, path string, req, resp any) error {
@@ -72,6 +76,7 @@ func (c *Client) DoJSON(ctx context.Context, method, path string, req, resp any)
 	if err != nil {
 		return err
 	}
+	respBody = decodeResponseBody(httpResp, respBody)
 
 	if httpResp.StatusCode >= http.StatusBadRequest {
 		return &terrors.HTTPError{Status: httpResp.StatusCode, Body: respBody}
@@ -197,6 +202,13 @@ func parseAPIError(body []byte) *terrors.APIError {
 	resultCode := jsonString(raw["sResultCode"])
 	resultText := jsonString(raw["sResultText"])
 
+	if needsCP932Decode(pErr) || needsCP932Decode(resultText) {
+		if cpRaw, err := decodeAPIErrorJSONCP932(body); err == nil {
+			pErr = jsonString(cpRaw["p_err"])
+			resultText = jsonString(cpRaw["sResultText"])
+		}
+	}
+
 	if pErrNo != "" && pErrNo != "0" {
 		return &terrors.APIError{
 			Code:    pErrNo,
@@ -214,6 +226,69 @@ func parseAPIError(body []byte) *terrors.APIError {
 		}
 	}
 	return nil
+}
+
+func decodeResponseBody(resp *http.Response, body []byte) []byte {
+	if len(body) == 0 {
+		return body
+	}
+	charset := responseCharset(resp)
+	if charset == "" {
+		if utf8.Valid(body) {
+			return body
+		}
+		if decoded, err := decodeShiftJIS(body); err == nil {
+			return decoded
+		}
+		return body
+	}
+	if isUTF8Charset(charset) {
+		return body
+	}
+	if isShiftJISCharset(charset) {
+		if decoded, err := decodeShiftJIS(body); err == nil {
+			return decoded
+		}
+	}
+	return body
+}
+
+func responseCharset(resp *http.Response) string {
+	if resp == nil {
+		return ""
+	}
+	value := resp.Header.Get("Content-Type")
+	if value == "" {
+		return ""
+	}
+	_, params, err := mime.ParseMediaType(value)
+	if err != nil {
+		return ""
+	}
+	return strings.ToLower(strings.TrimSpace(params["charset"]))
+}
+
+func isUTF8Charset(charset string) bool {
+	switch charset {
+	case "utf-8", "utf8":
+		return true
+	default:
+		return false
+	}
+}
+
+func isShiftJISCharset(charset string) bool {
+	switch charset {
+	case "shift_jis", "shift-jis", "sjis", "cp932", "windows-31j":
+		return true
+	default:
+		return false
+	}
+}
+
+func decodeShiftJIS(body []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(body), japanese.ShiftJIS.NewDecoder())
+	return io.ReadAll(reader)
 }
 
 func jsonString(raw json.RawMessage) string {

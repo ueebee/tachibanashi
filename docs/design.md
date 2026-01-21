@@ -91,6 +91,12 @@ func (c *Client) Event() *event.Service
 - ここで HTTP/業務エラーを `errors` に統一変換
 - 必須フィールド不足は `errors.ValidationError` で返す
 
+## 文字コード
+- 参照マニュアル HTML は `Shift_JIS`（`spec/mfds_json_api_refference_src/mfds_json_api_ref_text.html` 参照）
+- API レスポンス内の日本語が `Shift_JIS` の可能性があるため、共通送受信レイヤで UTF-8 へ正規化する
+  - `Content-Type` の `charset` が指定されていればそれに従う
+  - 未指定の場合でも UTF-8 不正なら `Shift_JIS` とみなしてデコードする
+
 ## 認証設計
 - `auth.Service` が login/logout/仮想URL を提供
 - `login` 成功時に `p_no` を `TokenStore` に保存
