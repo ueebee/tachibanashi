@@ -49,7 +49,7 @@ type MarketPriceResponse struct {
 
 type MarketPriceEntry struct {
 	IssueCode string
-	Fields    map[string]string
+	Fields    model.Attributes
 }
 
 func (e *MarketPriceEntry) UnmarshalJSON(data []byte) error {
@@ -57,7 +57,7 @@ func (e *MarketPriceEntry) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
 	}
-	e.Fields = make(map[string]string, len(raw))
+	e.Fields = make(model.Attributes, len(raw))
 	for key, value := range raw {
 		if key == "sIssueCode" {
 			e.IssueCode = value
@@ -69,10 +69,7 @@ func (e *MarketPriceEntry) UnmarshalJSON(data []byte) error {
 }
 
 func (e MarketPriceEntry) Value(key string) string {
-	if e.Fields == nil {
-		return ""
-	}
-	return e.Fields[key]
+	return e.Fields.Value(key)
 }
 
 type QuoteSnapshot struct {
@@ -125,7 +122,7 @@ func (s *Service) QuoteSnapshot(ctx context.Context, symbols []string, fields []
 	for _, entry := range raw.Prices {
 		quotes = append(quotes, model.Quote{
 			Symbol: entry.IssueCode,
-			Fields: cloneFields(entry.Fields),
+			Fields: cloneAttributes(entry.Fields),
 		})
 	}
 
@@ -149,11 +146,11 @@ func normalizeList(values []string) []string {
 	return out
 }
 
-func cloneFields(fields map[string]string) map[string]string {
+func cloneAttributes(fields model.Attributes) model.Attributes {
 	if fields == nil {
 		return nil
 	}
-	clone := make(map[string]string, len(fields))
+	clone := make(model.Attributes, len(fields))
 	for key, value := range fields {
 		clone[key] = value
 	}
