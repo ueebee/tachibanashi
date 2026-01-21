@@ -38,7 +38,7 @@ func main() {
 	}
 	defer cli.Auth().Logout(context.Background())
 
-	resp, err := cli.Price().Snapshot(
+	resp, err := cli.Price().QuoteSnapshot(
 		context.Background(),
 		[]string{"6501", "6502", "6503"},          // まとめて取得（最大120）
 		[]string{"pDPP", "pPRP", "tDPP:T"}, // 欲しいカラム
@@ -47,8 +47,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, entry := range resp.Prices {
-		fmt.Println(entry.IssueCode, entry.Value("pDPP"), entry.Value("tDPP:T"))
+	for _, quote := range resp.Quotes {
+		fmt.Println(quote.Symbol, quote.Value("pDPP"), quote.Value("tDPP:T"))
 	}
 }
 ```
