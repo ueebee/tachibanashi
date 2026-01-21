@@ -2,6 +2,7 @@
 /tmp/
 /AGENTS.md
 /.serena/
+/.env
 
 # Go build/test artifacts
 *.exe

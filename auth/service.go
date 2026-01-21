@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strconv"
 
 	terrors "github.com/ueebee/tachibanashi/errors"
 	"github.com/ueebee/tachibanashi/model"
@@ -45,8 +46,7 @@ type VirtualURLs struct {
 }
 
 type LoginResponse struct {
-	ResultCode string `json:"sResultCode"`
-	ResultText string `json:"sResultText"`
+	model.CommonResponse
 	VirtualURLs
 }
 
@@ -97,6 +97,13 @@ func (s *Service) Login(ctx context.Context, creds Credentials) (*LoginResponse,
 	if !resp.VirtualURLs.isZero() {
 		s.client.SetVirtualURLs(resp.VirtualURLs)
 	}
+	if resp.PNo != "" {
+		if v, err := parseInt64(resp.PNo); err == nil {
+			if store := s.client.TokenStore(); store != nil {
+				store.Set(v)
+			}
+		}
+	}
 
 	return &resp, nil
 }
@@ -130,4 +137,8 @@ func (s *Service) VirtualURL(ctx context.Context) (*VirtualURLs, error) {
 
 func (v VirtualURLs) isZero() bool {
 	return v.Request == "" && v.Master == "" && v.Price == "" && v.Event == ""
+}
+
+func parseInt64(value string) (int64, error) {
+	return strconv.ParseInt(value, 10, 64)
 }

@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	BaseURLProd = "https://kabuka.e-shiten.jp/e_api_v4r7/"
-	BaseURLDemo = "https://10.62.26.91/e_api_v4r7/"
+	BaseURLProd = "https://kabuka.e-shiten.jp/e_api_v4r8/"
+	BaseURLDemo = "https://demo-kabuka.e-shiten.jp/e_api_v4r8/"
 
 	DefaultTimeout   = 30 * time.Second
 	DefaultUserAgent = "tachibanashi"

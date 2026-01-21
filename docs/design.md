@@ -11,7 +11,10 @@
 ## プロジェクト設定
 - Go module: `github.com/ueebee/tachibanashi`
 - Go version: 最新（現環境は `go1.24.2`）
-- demo/prod の base URL は spec 記載の 2 つを固定で採用する
+- API バージョン: v4r8
+- demo/prod の base URL は固定で採用する
+  - prod: `https://kabuka.e-shiten.jp/e_api_v4r8/`
+  - demo: `https://demo-kabuka.e-shiten.jp/e_api_v4r8/`
 
 ## 全体構成
 中核は `Client` と共通の HTTP 送受信レイヤとし、機能はサービス単位で分割する。
