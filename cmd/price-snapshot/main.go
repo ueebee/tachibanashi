@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sort"
 	"strings"
 	"time"
 
@@ -81,14 +80,17 @@ func main() {
 
 	for _, quote := range resp.Quotes {
 		fmt.Printf("%s\n", quote.Symbol)
-		keys := make([]string, 0, len(quote.Fields))
-		for key := range quote.Fields {
-			keys = append(keys, key)
+		if value, ok := quote.LastPrice(); ok {
+			fmt.Printf("  last: %d\n", int64(value))
+		} else {
+			fmt.Printf("  last: \n")
 		}
-		sort.Strings(keys)
-		for _, key := range keys {
-			fmt.Printf("  %s: %s\n", key, quote.Fields[key])
+		if value, ok := quote.PrevClose(); ok {
+			fmt.Printf("  prev_close: %d\n", int64(value))
+		} else {
+			fmt.Printf("  prev_close: \n")
 		}
+		fmt.Printf("  last_time: %s\n", quote.LastTime())
 	}
 }
 
