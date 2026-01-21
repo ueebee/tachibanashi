@@ -310,6 +310,18 @@ func parsePrice(value string) (int64, bool) {
 	return parseInt64(value)
 }
 
+func parseFloat64(value string) (float64, bool) {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return 0, false
+	}
+	parsed, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return 0, false
+	}
+	return parsed, true
+}
+
 func cloneAttributes(fields model.Attributes) model.Attributes {
 	if fields == nil {
 		return nil
