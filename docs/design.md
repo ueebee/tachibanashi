@@ -32,6 +32,20 @@ model/
 errors/
 ```
 
+## 抽象化レイヤ（Facade）
+立花証券APIの用語や構造を一般的な用語へ変換する薄い抽象化レイヤを設ける。
+低レイヤは「立花証券APIそのままの薄いI/F」、高レイヤは「一般的なドメインI/F」とする。
+
+例:
+- IssueCode → Symbol/Code
+- MarketPrice → Quote
+- sTargetColumn → Fields
+
+方針:
+- 抽象レイヤは `model` に一般的な型（Quote/Order/Position/Balance 等）を定義
+- Raw レスポンスは map 等で保持し、未知フィールドを捨てない
+- 既存の薄い API は維持し、後方互換を優先
+
 ## 中核 API
 ```
 type Client struct {
