@@ -1,6 +1,7 @@
 # Project-specific
 /tmp/
 /AGENTS.md
+/.serena/
 
 # Go build/test artifacts
 *.exe

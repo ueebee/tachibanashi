@@ -2,6 +2,7 @@ package client
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/ueebee/tachibanashi/auth"
 	"github.com/ueebee/tachibanashi/event"
@@ -11,9 +12,11 @@ import (
 )
 
 type Client struct {
-	cfg   Config
-	http  *http.Client
-	token auth.TokenStore
+	cfg    Config
+	http   *http.Client
+	token  auth.TokenStore
+	urlsMu sync.RWMutex
+	urls   auth.VirtualURLs
 }
 
 func New(cfg Config, opts ...Option) (*Client, error) {
@@ -70,4 +73,16 @@ func (c *Client) BaseURL() string {
 
 func (c *Client) TokenStore() auth.TokenStore {
 	return c.token
+}
+
+func (c *Client) SetVirtualURLs(urls auth.VirtualURLs) {
+	c.urlsMu.Lock()
+	defer c.urlsMu.Unlock()
+	c.urls = urls
+}
+
+func (c *Client) VirtualURLs() auth.VirtualURLs {
+	c.urlsMu.RLock()
+	defer c.urlsMu.RUnlock()
+	return c.urls
 }
