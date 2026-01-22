@@ -15,7 +15,7 @@ func TestOrderRequestMarshalJSON(t *testing.T) {
 			JsonOfmt: "5",
 		},
 		CLMID: clmKabuNewOrder,
-		Params: OrderParams{
+		Payload: OrderParams{
 			"sIssueCode":  "6501",
 			"sOrderSuryou": "100",
 			"aCLMKabuHensaiData": []map[string]string{
@@ -141,5 +141,26 @@ func TestOrderListDetailResponseUnmarshal(t *testing.T) {
 	}
 	if resp.Fields.Value("sOrderStatus") != "FILLED" {
 		t.Fatalf("order status mismatch: %s", resp.Fields.Value("sOrderStatus"))
+	}
+}
+
+func TestRequireParams(t *testing.T) {
+	if err := requireParams(nil, "sOrderNumber"); err == nil {
+		t.Fatal("expected error for nil params")
+	}
+
+	params := OrderParams{"sOrderNumber": "123"}
+	if err := requireParams(params, "sOrderNumber", "sEigyouDay"); err == nil {
+		t.Fatal("expected error for missing param")
+	}
+
+	params["sEigyouDay"] = "20240101"
+	if err := requireParams(params, "sOrderNumber", "sEigyouDay"); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	params["sSecondPassword"] = " "
+	if err := requireParams(params, "sSecondPassword"); err == nil {
+		t.Fatal("expected error for empty string")
 	}
 }

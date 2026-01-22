@@ -53,7 +53,66 @@ func main() {
 }
 ```
 
-### 2) サンプル CLI で動作確認
+### 2) 注文一覧と新規注文（REQUEST I/F）
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/ueebee/tachibanashi/auth"
+	"github.com/ueebee/tachibanashi/client"
+	"github.com/ueebee/tachibanashi/request"
+)
+
+func main() {
+	cli, err := client.New(client.Config{BaseURL: client.BaseURLDemo})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = cli.Auth().Login(context.Background(), auth.Credentials{
+		LoginID:  "your_login_id",
+		Password: "your_password",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cli.Auth().Logout(context.Background())
+
+	orders, err := cli.Request().Orders(context.Background(), request.OrderParams{
+		"sIssueCode": "6501",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	_ = orders
+
+	_, err = cli.Request().KabuNewOrder(context.Background(), request.OrderParams{
+		"sZyoutoekiKazeiC":        "1",
+		"sIssueCode":              "6501",
+		"sSizyouC":                "00",
+		"sBaibaiKubun":            "3",
+		"sCondition":              "0",
+		"sOrderPrice":             "0",
+		"sOrderSuryou":            "100",
+		"sGenkinShinyouKubun":     "0",
+		"sOrderExpireDay":         "0",
+		"sGyakusasiOrderType":     "0",
+		"sGyakusasiZyouken":       "0",
+		"sGyakusasiPrice":         "*",
+		"sTatebiType":             "*",
+		"sTategyokuZyoutoekiKazeiC": "*",
+		"sSecondPassword":         "your_second_password",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+### 3) サンプル CLI で動作確認
 `.env` に認証情報を置いて実行します（`.env.example` 参照）。
 
 ```bash
@@ -61,6 +120,7 @@ go run ./cmd/auth-check
 go run ./cmd/price-snapshot
 go run ./cmd/request-read
 go run ./cmd/order-read
+go run ./cmd/order-submit
 ```
 
 ## 環境変数（サンプル）
@@ -79,6 +139,10 @@ go run ./cmd/order-read
 - `TACHIBANASHI_ORDER_STATUS`（order-read 用、任意）
 - `TACHIBANASHI_ORDER_NUMBER`（order-read 詳細用、任意）
 - `TACHIBANASHI_EIGYOU_DAY`（order-read 詳細用、任意）
+- `TACHIBANASHI_ORDER_BAIBAI_KUBUN`（order-submit 用、必須）
+- `TACHIBANASHI_ORDER_QTY`（order-submit 用、必須）
+- `TACHIBANASHI_ORDER_PRICE`（order-submit 用、任意、未指定は成行）
+- `TACHIBANASHI_SECOND_PASSWORD`（order-submit 用、必須）
 - `TACHIBANASHI_TIMEOUT`（任意）
 - `TACHIBANASHI_USER_AGENT`（任意）
 - `TACHIBANASHI_INSECURE_TLS`（任意、true/1 で検証無効）
