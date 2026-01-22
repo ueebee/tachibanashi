@@ -202,13 +202,6 @@ func parseAPIError(body []byte) *terrors.APIError {
 	resultCode := jsonString(raw["sResultCode"])
 	resultText := jsonString(raw["sResultText"])
 
-	if needsCP932Decode(pErr) || needsCP932Decode(resultText) {
-		if cpRaw, err := decodeAPIErrorJSONCP932(body); err == nil {
-			pErr = jsonString(cpRaw["p_err"])
-			resultText = jsonString(cpRaw["sResultText"])
-		}
-	}
-
 	if pErrNo != "" && pErrNo != "0" {
 		return &terrors.APIError{
 			Code:    pErrNo,
