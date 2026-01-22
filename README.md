@@ -121,6 +121,9 @@ go run ./cmd/price-snapshot
 go run ./cmd/request-read
 go run ./cmd/order-read
 go run ./cmd/order-submit
+go run ./cmd/order-correct
+go run ./cmd/order-cancel
+go run ./cmd/order-crud
 ```
 
 ## 環境変数（サンプル）
@@ -142,7 +145,13 @@ go run ./cmd/order-submit
 - `TACHIBANASHI_ORDER_BAIBAI_KUBUN`（order-submit 用、必須）
 - `TACHIBANASHI_ORDER_QTY`（order-submit 用、必須）
 - `TACHIBANASHI_ORDER_PRICE`（order-submit 用、任意、未指定は成行）
-- `TACHIBANASHI_SECOND_PASSWORD`（order-submit 用、必須）
+- `TACHIBANASHI_SECOND_PASSWORD`（order-submit/order-correct/order-cancel 用、必須）
+- `TACHIBANASHI_ORDER_NUMBER`（order-correct/order-cancel 用、必須）
+- `TACHIBANASHI_EIGYOU_DAY`（order-correct/order-cancel 用、必須）
+- `TACHIBANASHI_ORDER_CONDITION`（order-correct 用、任意、未指定は変更なし）
+- `TACHIBANASHI_ORDER_EXPIRE_DAY`（order-correct 用、任意、未指定は変更なし）
+- `TACHIBANASHI_ORDER_GYAKUSASI_ZYOUKEN`（order-correct 用、任意、未指定は変更なし）
+- `TACHIBANASHI_ORDER_GYAKUSASI_PRICE`（order-correct 用、任意、未指定は変更なし）
 - `TACHIBANASHI_TIMEOUT`（任意）
 - `TACHIBANASHI_USER_AGENT`（任意）
 - `TACHIBANASHI_INSECURE_TLS`（任意、true/1 で検証無効）
@@ -153,6 +162,10 @@ go run ./cmd/order-submit
 - `go run ./cmd/price-snapshot` で時価取得
 - `go run ./cmd/request-read` で口座・建玉・余力の読み取り
 - `go run ./cmd/order-read` で注文一覧の読み取り
+- `go run ./cmd/order-submit` で注文を送信
+- `go run ./cmd/order-correct` で注文訂正
+- `go run ./cmd/order-cancel` で注文取消
+- `go run ./cmd/order-crud` で注文の CRUD フローを一括確認
 - 余力詳細を出す場合は `TACHIBANASHI_GENBUTU_HITUKE_INDEX` / `TACHIBANASHI_SINYOU_HITUKE_INDEX` を設定
 - 注文詳細を出す場合は `TACHIBANASHI_ORDER_NUMBER` / `TACHIBANASHI_EIGYOU_DAY` を設定
 
