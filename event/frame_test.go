@@ -78,14 +78,14 @@ func TestDecodeEventBase64(t *testing.T) {
 		t.Fatalf("DecodeEvent() error = %v", err)
 	}
 
-	frame, ok := event.(Frame)
+	ns, ok := event.(NS)
 	if !ok {
 		t.Fatalf("event type mismatch")
 	}
-	if got := frame.Value("p_HDL"); got != want {
+	if got := ns.Headline; got != want {
 		t.Fatalf("p_HDL = %s", got)
 	}
-	if got := frame.Value("p_TX"); got != want {
+	if got := ns.Body; got != want {
 		t.Fatalf("p_TX = %s", got)
 	}
 }

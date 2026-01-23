@@ -93,6 +93,12 @@ func DecodeEvent(data []byte) (Event, error) {
 		return parseFD(frame)
 	case CommandEC:
 		return parseEC(frame)
+	case CommandNS:
+		return parseNS(frame)
+	case CommandSS:
+		return parseSS(frame)
+	case CommandUS:
+		return parseUS(frame)
 	default:
 		return frame, nil
 	}

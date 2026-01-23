@@ -5,6 +5,6 @@ go 1.24.0
 toolchain go1.24.2
 
 require (
-	golang.org/x/text v0.33.0 // indirect
-	nhooyr.io/websocket v1.8.14 // indirect
+	github.com/gorilla/websocket v1.5.3
+	golang.org/x/text v0.33.0
 )

@@ -2,6 +2,7 @@ package event
 
 import (
 	"net/url"
+	"strings"
 	"testing"
 )
 
@@ -63,6 +64,10 @@ func TestBuildWSURLRID22(t *testing.T) {
 	}
 	if query.Get("p_evt_cmd") != "FD" {
 		t.Fatalf("p_evt_cmd = %s", query.Get("p_evt_cmd"))
+	}
+
+	if strings.Contains(parsed.RawQuery, "%2C") {
+		t.Fatalf("unexpected encoded comma: %s", parsed.RawQuery)
 	}
 }
 

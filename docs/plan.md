@@ -271,14 +271,14 @@ Base64 対象項目（WebSocket 版）
 - [x] EC: Order/Execution へのマッピング
 
 #### 6-7) NS（ニュース通知）
-- [ ] NS: 通知モデル定義
-- [ ] NS: Base64 → 文字列復号（見出し/本文）
-- [ ] NS: テスト（複数カテゴリ/銘柄）
+- [x] NS: 通知モデル定義
+- [x] NS: Base64 → 文字列復号（見出し/本文）
+- [x] NS: テスト（複数カテゴリ/銘柄）
 
 #### 6-8) SS / US（システム/運用ステータス通知）
-- [ ] SS: 通知モデル定義/パース/テスト
-- [ ] US: 通知モデル定義/パース/テスト
-- [ ] SS/US: 4-1 マスタ更新との関係整理
+- [x] SS: 通知モデル定義/パース/テスト
+- [x] US: 通知モデル定義/パース/テスト
+- [x] SS/US: 4-1 マスタ更新との関係整理（US: p_UC=11 / p_UU=1100 を検知し「マスタ再DL推奨」として露出、初期は自動DLしない）
 
 ## 7) API 抽象化レイヤ
 - [x] Quote 抽象化（model.Quote / QuoteSnapshot）
@@ -295,7 +295,7 @@ Base64 対象項目（WebSocket 版）
 - [x] CLI: order-submit
 - [x] CLI: order-correct / order-cancel
 - [x] CLI: order-crud
-- [ ] Event WS サンプル
+- [x] Event WS サンプル
 - [ ] httptest を使ったスモークテスト
 
 ## 決定事項

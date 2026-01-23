@@ -75,22 +75,40 @@ func BuildWSURL(base string, params Params) (string, error) {
 		return "", err
 	}
 
-	query := u.Query()
-	query.Set("p_rid", strconv.Itoa(normalized.RID))
-	query.Set("p_board_no", strconv.Itoa(normalized.BoardNo))
+	// Build query manually to keep comma-separated values intact.
+	commaKeys := map[string]struct{}{
+		"p_evt_cmd":    {},
+		"p_issue_code": {},
+		"p_gyou_no":    {},
+		"p_mkt_code":   {},
+	}
+	paramsList := make([]string, 0, 8)
+	add := func(key, value string) {
+		if strings.TrimSpace(value) == "" {
+			return
+		}
+		encoded := url.QueryEscape(value)
+		if _, ok := commaKeys[key]; ok {
+			encoded = strings.ReplaceAll(encoded, "%2C", ",")
+		}
+		paramsList = append(paramsList, key+"="+encoded)
+	}
+
+	add("p_rid", strconv.Itoa(normalized.RID))
+	add("p_board_no", strconv.Itoa(normalized.BoardNo))
 	if len(normalized.Rows) > 0 {
-		query.Set("p_gyou_no", joinInts(normalized.Rows))
+		add("p_gyou_no", joinInts(normalized.Rows))
 	}
 	if len(normalized.IssueCodes) > 0 {
-		query.Set("p_issue_code", strings.Join(normalized.IssueCodes, ","))
+		add("p_issue_code", strings.Join(normalized.IssueCodes, ","))
 	}
 	if len(normalized.MarketCodes) > 0 {
-		query.Set("p_mkt_code", strings.Join(normalized.MarketCodes, ","))
+		add("p_mkt_code", strings.Join(normalized.MarketCodes, ","))
 	}
-	query.Set("p_eno", strconv.FormatInt(normalized.Eno, 10))
-	query.Set("p_evt_cmd", joinCommands(normalized.Cmds))
+	add("p_eno", strconv.FormatInt(normalized.Eno, 10))
+	add("p_evt_cmd", joinCommands(normalized.Cmds))
 
-	u.RawQuery = query.Encode()
+	u.RawQuery = strings.Join(paramsList, "&")
 	return u.String(), nil
 }
 

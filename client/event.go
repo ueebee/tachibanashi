@@ -2,16 +2,20 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"net"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
 	terrors "github.com/ueebee/tachibanashi/errors"
 	"github.com/ueebee/tachibanashi/event"
-	"nhooyr.io/websocket"
 )
 
 const (
@@ -106,7 +110,7 @@ func (c *wsConn) Recv(ctx context.Context) (event.Event, error) {
 			continue
 		}
 
-		_, data, err := conn.Read(ctx)
+		data, err := c.readMessage(ctx, conn)
 		if err == nil {
 			ev, err := event.DecodeEvent(data)
 			if err != nil {
@@ -135,7 +139,8 @@ func (c *wsConn) Close() error {
 		close(c.closed)
 		conn := c.current()
 		if conn != nil {
-			err = conn.Close(websocket.StatusNormalClosure, "")
+			_ = conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+			err = conn.Close()
 			c.dropConn(conn)
 		}
 		c.parent.clearEventActive()
@@ -157,9 +162,8 @@ func (c *wsConn) reconnect(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		conn, _, err := websocket.Dial(ctx, url, &websocket.DialOptions{
-			HTTPClient: c.parent.http,
-		})
+		dialer := c.parent.wsDialer()
+		conn, _, err := dialer.DialContext(ctx, url, nil)
 		if err == nil {
 			c.setConn(conn)
 			return nil
@@ -202,11 +206,61 @@ func (c *wsConn) isClosed() bool {
 	}
 }
 
+func (c *wsConn) readMessage(ctx context.Context, conn *websocket.Conn) ([]byte, error) {
+	for {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+
+		if deadline, ok := ctx.Deadline(); ok {
+			_ = conn.SetReadDeadline(deadline)
+		} else {
+			_ = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+		}
+
+		messageType, data, err := conn.ReadMessage()
+		if err != nil {
+			if netErr, ok := err.(net.Error); ok && netErr.Timeout() && ctx.Err() == nil {
+				continue
+			}
+			return nil, err
+		}
+		if messageType != websocket.TextMessage && messageType != websocket.BinaryMessage {
+			continue
+		}
+		return data, nil
+	}
+}
+
 func (c *Client) logf(format string, args ...any) {
 	if c.cfg.Logger == nil {
 		return
 	}
 	c.cfg.Logger.Printf(format, args...)
+}
+
+func (c *Client) wsDialer() *websocket.Dialer {
+	dialer := *websocket.DefaultDialer
+	dialer.HandshakeTimeout = c.cfg.Timeout
+	if transport, ok := c.http.Transport.(*http.Transport); ok && transport != nil {
+		dialer.TLSClientConfig = transport.TLSClientConfig
+		dialer.Proxy = transport.Proxy
+		if transport.DialContext != nil {
+			dialer.NetDialContext = transport.DialContext
+		}
+		if transport.DialTLSContext != nil {
+			dialer.NetDialTLSContext = transport.DialTLSContext
+		}
+	}
+	if dialer.TLSClientConfig == nil {
+		base := strings.TrimSpace(c.cfg.BaseURL)
+		if base != "" {
+			if parsed, err := url.Parse(base); err == nil && parsed.Scheme == "https" {
+				dialer.TLSClientConfig = &tls.Config{ServerName: parsed.Hostname()}
+			}
+		}
+	}
+	return &dialer
 }
 
 func isUnsupportedCommand(err error) bool {
