@@ -138,51 +138,51 @@
 - [x] CLMEventDownloadComplete: 受信 / 状態管理 / テスト
 
 ### 4-2) マスタ問合取得
-- [ ] 共通: Request/Response ラッパ（MASTER 仮想URL）
-- [ ] 共通: 文字コード正規化（ニュース p_HDL/p_TX の Shift_JIS）
-- [ ] 共通: sTargetIssueCode 最大120件のバリデーション
-- [ ] 共通: 空文字/0 の扱い（値なし）方針整理
-- [ ] 共通: ユニットテスト（リクエスト/レスポンス）
+- [x] 共通: Request/Response ラッパ（MASTER 仮想URL）
+- [x] 共通: 文字コード正規化（ニュース p_HDL/p_TX の Shift_JIS）
+- [x] 共通: sTargetIssueCode 最大120件のバリデーション
+- [x] 共通: 空文字/0 の扱い（値なし）方針整理
+- [x] 共通: ユニットテスト（リクエスト/レスポンス）
 
 #### 4-2-1) CLMMfdsGetMasterData（マスタ情報問合）
-- [ ] 要求モデル: sTargetCLMID / sTargetColumn
-- [ ] 対象CLMID一覧の整理（CLMIssueMstKabu/CLMIssueSizyouMstKabu/CLMIssueMstSak/CLMIssueMstOp/CLMIssueMstOther/CLMIssueMstIndex/CLMIssueMstFx/CLMOrderErrReason/CLMDateZyouhou）
-- [ ] 応答モデル: CLMID 名ごとの配列（動的キー）パース
-- [ ] 取得列指定のフィルタ（指定列のみ抽出）
-- [ ] テスト: 2種類CLMID混在レスポンスのパース
+- [x] 要求モデル: sTargetCLMID / sTargetColumn
+- [x] 対象CLMID一覧の整理（CLMIssueMstKabu/CLMIssueSizyouMstKabu/CLMIssueMstSak/CLMIssueMstOp/CLMIssueMstOther/CLMIssueMstIndex/CLMIssueMstFx/CLMOrderErrReason/CLMDateZyouhou）
+- [x] 応答モデル: CLMID 名ごとの配列（動的キー）パース
+- [x] 取得列指定のフィルタ（指定列のみ抽出）
+- [x] テスト: 2種類CLMID混在レスポンスのパース
 
 #### 4-2-2) CLMMfdsGetNewsHead（ニュースヘッダ）
-- [ ] 要求モデル: p_CG / p_IS / p_DT_FROM / p_DT_TO / p_REC_OFST / p_REC_LIMT
-- [ ] レコード取得条件（AND 条件）/ p_REC_MAX 取り扱い
-- [ ] 応答モデル: aCLMMfdsNewsHead の配列パース
-- [ ] 文字コード: p_HDL デコード
-- [ ] テスト: 検索条件付きの要求とレスポンス
+- [x] 要求モデル: p_CG / p_IS / p_DT_FROM / p_DT_TO / p_REC_OFST / p_REC_LIMT
+- [x] レコード取得条件（AND 条件）/ p_REC_MAX 取り扱い
+- [x] 応答モデル: aCLMMfdsNewsHead の配列パース
+- [x] 文字コード: p_HDL デコード
+- [x] テスト: 検索条件付きの要求とレスポンス
 
 #### 4-2-3) CLMMfdsGetNewsBody（ニュース本文）
-- [ ] 要求モデル: p_ID
-- [ ] 応答モデル: aCLMMfdsNewsBody の配列パース
-- [ ] 文字コード: p_HDL / p_TX デコード
-- [ ] テスト: 1件レスポンスのパース
+- [x] 要求モデル: p_ID
+- [x] 応答モデル: aCLMMfdsNewsBody の配列パース
+- [x] 文字コード: p_HDL / p_TX デコード
+- [x] テスト: 1件レスポンスのパース
 
 #### 4-2-4) CLMMfdsGetIssueDetail（銘柄詳細）
-- [ ] 要求モデル: sTargetIssueCode（最大120件）
-- [ ] 応答モデル: aCLMMfdsIssueDetail の配列パース
-- [ ] テスト: 主要フィールドの型/値パース
+- [x] 要求モデル: sTargetIssueCode（最大120件）
+- [x] 応答モデル: aCLMMfdsIssueDetail の配列パース
+- [x] テスト: 主要フィールドの型/値パース
 
 #### 4-2-5) CLMMfdsGetSyoukinZan（証金残）
-- [ ] 要求モデル: sTargetIssueCode（最大120件）
-- [ ] 応答モデル: aCLMMfdsSyoukinZan の配列パース
-- [ ] テスト: 数値/日付フィールドのパース
+- [x] 要求モデル: sTargetIssueCode（最大120件）
+- [x] 応答モデル: aCLMMfdsSyoukinZan の配列パース
+- [x] テスト: 数値/日付フィールドのパース
 
 #### 4-2-6) CLMMfdsGetShinyouZan（信用残）
-- [ ] 要求モデル: sTargetIssueCode（最大120件）
-- [ ] 応答モデル: aCLMMfdsShinyouZan の配列パース
-- [ ] テスト: 数値/日付フィールドのパース
+- [x] 要求モデル: sTargetIssueCode（最大120件）
+- [x] 応答モデル: aCLMMfdsShinyouZan の配列パース
+- [x] テスト: 数値/日付フィールドのパース
 
 #### 4-2-7) CLMMfdsGetHibuInfo（逆日歩）
-- [ ] 要求モデル: sTargetIssueCode（最大120件）
-- [ ] 応答モデル: aCLMMfdsHibuInfo の配列パース
-- [ ] テスト: 逆日歩フィールドのパース
+- [x] 要求モデル: sTargetIssueCode（最大120件）
+- [x] 応答モデル: aCLMMfdsHibuInfo の配列パース
+- [x] テスト: 逆日歩フィールドのパース
 
 ## 5) 時価 I/F（api_request_if_v4r7 / mfds_json_api_refference）
 - [ ] 共通: Request/Response ラッパ（PRICE 仮想URL）
