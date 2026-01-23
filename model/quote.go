@@ -125,3 +125,42 @@ func (q Quote) MarketAskSize() (Quantity, bool) {
 func (q Quote) MarketBidSize() (Quantity, bool) {
 	return q.Quantity(FieldMarketBidSize)
 }
+
+// OrderBook returns 10-level order book from quote fields.
+func (q Quote) OrderBook() OrderBook {
+	var ob OrderBook
+
+	askPriceFields := [10]string{
+		FieldAskPrice1, FieldAskPrice2, FieldAskPrice3, FieldAskPrice4, FieldAskPrice5,
+		FieldAskPrice6, FieldAskPrice7, FieldAskPrice8, FieldAskPrice9, FieldAskPrice10,
+	}
+	askSizeFields := [10]string{
+		FieldAskSize1, FieldAskSize2, FieldAskSize3, FieldAskSize4, FieldAskSize5,
+		FieldAskSize6, FieldAskSize7, FieldAskSize8, FieldAskSize9, FieldAskSize10,
+	}
+	bidPriceFields := [10]string{
+		FieldBidPrice1, FieldBidPrice2, FieldBidPrice3, FieldBidPrice4, FieldBidPrice5,
+		FieldBidPrice6, FieldBidPrice7, FieldBidPrice8, FieldBidPrice9, FieldBidPrice10,
+	}
+	bidSizeFields := [10]string{
+		FieldBidSize1, FieldBidSize2, FieldBidSize3, FieldBidSize4, FieldBidSize5,
+		FieldBidSize6, FieldBidSize7, FieldBidSize8, FieldBidSize9, FieldBidSize10,
+	}
+
+	for i := 0; i < 10; i++ {
+		if price, ok := q.Price(askPriceFields[i]); ok {
+			ob.Asks[i].Price = price
+		}
+		if qty, ok := q.Quantity(askSizeFields[i]); ok {
+			ob.Asks[i].Quantity = qty
+		}
+		if price, ok := q.Price(bidPriceFields[i]); ok {
+			ob.Bids[i].Price = price
+		}
+		if qty, ok := q.Quantity(bidSizeFields[i]); ok {
+			ob.Bids[i].Quantity = qty
+		}
+	}
+
+	return ob
+}
