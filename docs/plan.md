@@ -199,10 +199,10 @@
 - [x] テスト: 複数銘柄・複数カラムのパース
 
 #### 5-2) CLMMfdsGetMarketPriceHistory（蓄積情報）
-- [ ] 要求モデル: sIssueCode / sSizyouC（1リクエスト1銘柄）
-- [ ] 応答モデル: aCLMMfdsGetMarketPriceHistory の配列パース
-- [ ] 分割関連フィールド（pSPUO/pSPUC/pSPUK）の扱い整理
-- [ ] テスト: 日付昇順リストのパース
+- [x] 要求モデル: sIssueCode / sSizyouC（1リクエスト1銘柄）
+- [x] 応答モデル: aCLMMfdsGetMarketPriceHistory の配列パース
+- [x] 分割関連フィールド（pSPUO/pSPUC/pSPUK）の扱い整理
+- [x] テスト: 日付昇順リストのパース
 
 ## 6) EVENT I/F（api_event_if_v4r7）
 - [x] Service/Conn 骨格

@@ -119,3 +119,67 @@ func TestQuoteSnapshotConverts(t *testing.T) {
 		t.Fatalf("prev close mismatch: %s", got)
 	}
 }
+
+func TestHistoryBuildsRequestAndParsesEntries(t *testing.T) {
+	response := []byte(`{
+		"sCLMID":"CLMMfdsGetMarketPriceHistory",
+		"sIssueCode":"6501",
+		"sSizyouC":"00",
+		"aCLMMfdsGetMarketPriceHistory":[
+			{"sDate":"20240101","pDOP":"100","pDHP":"110","pDLP":"90","pDPP":"105","pDV":"1000"}
+		]
+	}`)
+
+	client := &mockClient{
+		urls:     auth.VirtualURLs{Price: "https://example.invalid/price"},
+		response: response,
+	}
+	svc := NewService(client)
+
+	resp, err := svc.History(context.Background(), "6501", "00")
+	if err != nil {
+		t.Fatalf("History() error = %v", err)
+	}
+
+	req, ok := client.lastReq.(*MarketPriceHistoryRequest)
+	if !ok {
+		t.Fatalf("request type mismatch")
+	}
+	if req.CLMID != clmMarketPriceHistory {
+		t.Fatalf("CLMID mismatch: %s", req.CLMID)
+	}
+	if req.IssueCode != "6501" {
+		t.Fatalf("IssueCode mismatch: %s", req.IssueCode)
+	}
+	if req.MarketCode != "00" {
+		t.Fatalf("MarketCode mismatch: %s", req.MarketCode)
+	}
+
+	if resp.IssueCode != "6501" {
+		t.Fatalf("response issue code mismatch: %s", resp.IssueCode)
+	}
+	if resp.MarketCode != "00" {
+		t.Fatalf("response market code mismatch: %s", resp.MarketCode)
+	}
+	if len(resp.Entries) != 1 {
+		t.Fatalf("entries length mismatch: %d", len(resp.Entries))
+	}
+	entry := resp.Entries[0]
+	if entry.Date != "20240101" {
+		t.Fatalf("date mismatch: %s", entry.Date)
+	}
+	if got := entry.Fields.Value("pDPP"); got != "105" {
+		t.Fatalf("close price mismatch: %s", got)
+	}
+}
+
+func TestHistoryRejectsMultipleIssues(t *testing.T) {
+	client := &mockClient{
+		urls: auth.VirtualURLs{Price: "https://example.invalid/price"},
+	}
+	svc := NewService(client)
+
+	if _, err := svc.History(context.Background(), "6501,6502", ""); err == nil {
+		t.Fatalf("expected error for multiple issue codes")
+	}
+}

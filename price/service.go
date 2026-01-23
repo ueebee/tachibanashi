@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	clmMarketPrice = "CLMMfdsGetMarketPrice"
+	clmMarketPrice        = "CLMMfdsGetMarketPrice"
+	clmMarketPriceHistory = "CLMMfdsGetMarketPriceHistory"
 
 	maxIssueCodes = 120
 )
@@ -77,6 +78,45 @@ type QuoteSnapshot struct {
 	Raw    *MarketPriceResponse
 }
 
+type MarketPriceHistoryRequest struct {
+	model.CommonParams
+	CLMID      string `json:"sCLMID"`
+	IssueCode  string `json:"sIssueCode"`
+	MarketCode string `json:"sSizyouC,omitempty"`
+}
+
+func (r *MarketPriceHistoryRequest) Params() *model.CommonParams {
+	return &r.CommonParams
+}
+
+type MarketPriceHistoryResponse struct {
+	model.CommonResponse
+	IssueCode  string                    `json:"sIssueCode"`
+	MarketCode string                    `json:"sSizyouC"`
+	Entries    []MarketPriceHistoryEntry `json:"aCLMMfdsGetMarketPriceHistory"`
+}
+
+type MarketPriceHistoryEntry struct {
+	Date   string
+	Fields model.Attributes
+}
+
+func (e *MarketPriceHistoryEntry) UnmarshalJSON(data []byte) error {
+	var raw map[string]string
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	e.Fields = make(model.Attributes, len(raw))
+	for key, value := range raw {
+		if key == "sDate" {
+			e.Date = value
+			continue
+		}
+		e.Fields[key] = value
+	}
+	return nil
+}
+
 // Snapshot fetches market prices for multiple codes in a single request (max 120).
 func (s *Service) Snapshot(ctx context.Context, issueCodes []string, columns []string) (*MarketPriceResponse, error) {
 	codes := normalizeList(issueCodes)
@@ -127,6 +167,42 @@ func (s *Service) QuoteSnapshot(ctx context.Context, symbols []string, fields []
 	}
 
 	return &QuoteSnapshot{Quotes: quotes, Raw: raw}, nil
+}
+
+// History fetches daily price history for a single issue code.
+func (s *Service) History(ctx context.Context, issueCode, marketCode string) (*MarketPriceHistoryResponse, error) {
+	codes := normalizeList([]string{issueCode})
+	if len(codes) == 0 {
+		return nil, &terrors.ValidationError{Field: "issue_code", Reason: "required"}
+	}
+	if len(codes) > 1 {
+		return nil, &terrors.ValidationError{Field: "issue_code", Reason: "single issue only"}
+	}
+
+	marketCodes := normalizeList([]string{marketCode})
+	if len(marketCodes) > 1 {
+		return nil, &terrors.ValidationError{Field: "market_code", Reason: "single market only"}
+	}
+
+	urls := s.client.VirtualURLs()
+	if urls.Price == "" {
+		return nil, errors.New("tachibanashi: virtual price URL not set")
+	}
+
+	req := MarketPriceHistoryRequest{
+		CommonParams: model.CommonParams{JsonOfmt: "5"},
+		CLMID:        clmMarketPriceHistory,
+		IssueCode:    codes[0],
+	}
+	if len(marketCodes) == 1 {
+		req.MarketCode = marketCodes[0]
+	}
+
+	var resp MarketPriceHistoryResponse
+	if err := s.client.DoJSON(ctx, http.MethodGet, urls.Price, &req, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 func normalizeList(values []string) []string {
