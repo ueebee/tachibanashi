@@ -10,7 +10,7 @@ import (
 
 func TestDecodeEventFD(t *testing.T) {
 	hexValue := hex.EncodeToString([]byte("TPM"))
-	raw := fmt.Sprintf("p_no\x021\x01p_date\x022018.12.03-13:11:22.122\x01p_cmd\x02FD\x01p_1_DPP\x026129\x01t_1_DPP:T\x0214:10\x01x_2_LISS\x02%s", hexValue)
+	raw := fmt.Sprintf("p_no\x021\x01p_date\x022018.12.03-13:11:22.122\x01p_cmd\x02FD\x01p_1_DPP\x026129\x01p_1_DPP:T\x0214:10\x01x_2_LISS\x02%s", hexValue)
 
 	event, err := DecodeEvent([]byte(raw))
 	if err != nil {

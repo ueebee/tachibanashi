@@ -23,6 +23,11 @@ type QuoteBook struct {
 	rows map[int]model.Attributes
 }
 
+type QuoteRow struct {
+	Row   int
+	Quote model.Quote
+}
+
 func NewQuoteBook() *QuoteBook {
 	return &QuoteBook{rows: make(map[int]model.Attributes)}
 }
@@ -60,6 +65,25 @@ func (b *QuoteBook) Snapshot() []model.Quote {
 	return out
 }
 
+func (b *QuoteBook) SnapshotRows() []QuoteRow {
+	if len(b.rows) == 0 {
+		return nil
+	}
+	keys := make([]int, 0, len(b.rows))
+	for key := range b.rows {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+	out := make([]QuoteRow, 0, len(keys))
+	for _, key := range keys {
+		out = append(out, QuoteRow{
+			Row:   key,
+			Quote: model.Quote{Fields: cloneAttributes(b.rows[key])},
+		})
+	}
+	return out
+}
+
 func (f FD) Quotes(symbols map[int]string) []model.Quote {
 	if len(f.Rows) == 0 {
 		return nil
@@ -85,6 +109,7 @@ func parseFD(frame Frame) (FD, error) {
 		if !ok {
 			continue
 		}
+		field = normalizeFDField(field)
 		value := ""
 		if len(values) > 0 {
 			value = values[0]
@@ -114,6 +139,16 @@ func parseFD(frame Frame) (FD, error) {
 		})
 	}
 	return FD{Frame: frame, Rows: out}, nil
+}
+
+func normalizeFDField(field string) string {
+	if strings.HasPrefix(field, "p") {
+		rest := field[1:]
+		if strings.HasSuffix(rest, ":T") {
+			return "t" + rest
+		}
+	}
+	return field
 }
 
 func parseFDKey(key string) (int, string, bool) {

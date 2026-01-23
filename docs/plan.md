@@ -296,6 +296,7 @@ Base64 対象項目（WebSocket 版）
 - [x] CLI: order-correct / order-cancel
 - [x] CLI: order-crud
 - [x] Event WS サンプル
+- [x] CLI: board-stream
 - [ ] httptest を使ったスモークテスト
 
 ## 決定事項
