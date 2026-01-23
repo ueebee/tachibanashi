@@ -161,31 +161,27 @@ func printBoard(rows []event.QuoteRow, symbols map[int]string, levels int) {
 	for _, row := range rows {
 		label := resolveLabel(row.Row, symbols)
 		last, lastOK := row.Quote.LastPrice()
-		fmt.Printf("%s last=%s time=%s\n", label, formatMaybePrice(last, lastOK), row.Quote.LastTime())
-		fmt.Printf("  ask %s\n", formatLevels(row.Quote, "pGAP", "pGAV", levels))
-		fmt.Printf("  bid %s\n", formatLevels(row.Quote, "pGBP", "pGBV", levels))
+		ob := row.Quote.OrderBook()
+		spread := ob.Spread()
+
+		fmt.Printf("%s last=%s time=%s spread=%s\n",
+			label, formatMaybePrice(last, lastOK), row.Quote.LastTime(), formatMaybePrice(spread, spread > 0))
+		fmt.Printf("  ask %s\n", formatBookLevels(ob.Asks[:levels]))
+		fmt.Printf("  bid %s\n", formatBookLevels(ob.Bids[:levels]))
 	}
 }
 
-func formatLevels(quote model.Quote, pricePrefix, sizePrefix string, levels int) string {
-	if levels <= 0 {
+func formatBookLevels(levels []model.BookLevel) string {
+	if len(levels) == 0 {
 		return ""
 	}
-	parts := make([]string, 0, levels)
-	for i := 1; i <= levels; i++ {
-		price := quote.Value(fmt.Sprintf("%s%d", pricePrefix, i))
-		size := quote.Value(fmt.Sprintf("%s%d", sizePrefix, i))
-		if price == "" && size == "" {
+	parts := make([]string, 0, len(levels))
+	for _, level := range levels {
+		if level.IsZero() {
 			parts = append(parts, "-")
 			continue
 		}
-		if size == "" {
-			size = "-"
-		}
-		if price == "" {
-			price = "-"
-		}
-		parts = append(parts, fmt.Sprintf("%s(%s)", price, size))
+		parts = append(parts, fmt.Sprintf("%d(%d)", level.Price, level.Quantity))
 	}
 	return strings.Join(parts, " ")
 }
