@@ -283,9 +283,9 @@ Base64 対象項目（WebSocket 版）
 ## 7) API 抽象化レイヤ
 - [x] Quote 抽象化（model.Quote / QuoteSnapshot）
 - [x] Attributes / Order / Position / Balance 型
-- [ ] 注文/建玉/残高の mapper 追加
-- [ ] 口座/余力の抽象スナップショット拡充
-- [ ] Facade API（薄いAPI + 抽象APIの二層）
+- [x] 注文/建玉/残高の mapper 追加
+- [x] 口座/余力の抽象スナップショット拡充
+- [x] Facade API（薄いAPI + 抽象APIの二層）
 
 ## 8) 例 + テスト
 - [x] CLI: auth-check

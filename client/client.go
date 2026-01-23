@@ -6,6 +6,7 @@ import (
 
 	"github.com/ueebee/tachibanashi/auth"
 	"github.com/ueebee/tachibanashi/event"
+	"github.com/ueebee/tachibanashi/facade"
 	"github.com/ueebee/tachibanashi/master"
 	"github.com/ueebee/tachibanashi/price"
 	"github.com/ueebee/tachibanashi/request"
@@ -71,6 +72,10 @@ func (c *Client) Master() *master.Service {
 
 func (c *Client) Event() *event.Service {
 	return event.NewService(c)
+}
+
+func (c *Client) Facade() *facade.Service {
+	return facade.New(c.Request())
 }
 
 func (c *Client) BaseURL() string {
