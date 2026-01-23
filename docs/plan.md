@@ -127,15 +127,15 @@
 - [x] CLMIssueSizyouKiseiHasei: モデル定義 / UPDATE 反映 / テスト
 
 #### 4-1-5) 静的マスタ（spec 2-12〜2-15）
-- [ ] CLMYobine: 項目一覧抽出 / 主キー決定
-- [ ] CLMYobine: モデル定義 / パース / 格納 / テスト
-- [ ] CLMDaiyouKakeme: 項目一覧抽出 / 主キー決定
-- [ ] CLMDaiyouKakeme: モデル定義 / パース / 格納 / テスト
-- [ ] CLMHosyoukinMst: 項目一覧抽出 / 主キー決定
-- [ ] CLMHosyoukinMst: モデル定義 / パース / 格納 / テスト
-- [ ] CLMOrderErrReason: 項目一覧抽出 / 主キー決定
-- [ ] CLMOrderErrReason: モデル定義 / パース / 格納 / テスト
-- [ ] CLMEventDownloadComplete: 受信 / 状態管理 / テスト
+- [x] CLMYobine: 項目一覧抽出 / 主キー決定
+- [x] CLMYobine: モデル定義 / パース / 格納 / テスト
+- [x] CLMDaiyouKakeme: 項目一覧抽出 / 主キー決定
+- [x] CLMDaiyouKakeme: モデル定義 / パース / 格納 / テスト
+- [x] CLMHosyoukinMst: 項目一覧抽出 / 主キー決定
+- [x] CLMHosyoukinMst: モデル定義 / パース / 格納 / テスト
+- [x] CLMOrderErrReason: 項目一覧抽出 / 主キー決定
+- [x] CLMOrderErrReason: モデル定義 / パース / 格納 / テスト
+- [x] CLMEventDownloadComplete: 受信 / 状態管理 / テスト
 
 ### 4-2) マスタ問合取得
 - [ ] 共通: Request/Response ラッパ（MASTER 仮想URL）
