@@ -195,8 +195,8 @@
 - [x] 要求モデル: sTargetIssueCode / sTargetColumn
 - [x] 応答モデル: aCLMMfdsMarketPrice の配列パース
 - [x] 抽象モデル: QuoteSnapshot への変換
-- [ ] 情報コード一覧（FD）との対応表整備
-- [ ] テスト: 複数銘柄・複数カラムのパース
+- [x] 情報コード一覧（FD）との対応表整備
+- [x] テスト: 複数銘柄・複数カラムのパース
 
 #### 5-2) CLMMfdsGetMarketPriceHistory（蓄積情報）
 - [ ] 要求モデル: sIssueCode / sSizyouC（1リクエスト1銘柄）
