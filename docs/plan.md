@@ -297,7 +297,7 @@ Base64 対象項目（WebSocket 版）
 - [x] CLI: order-crud
 - [x] Event WS サンプル
 - [x] CLI: board-stream
-- [ ] httptest を使ったスモークテスト
+- [ ] httptest を使ったスモークテスト（後回し）
 
 ## 決定事項
 - Go module: github.com/ueebee/tachibanashi
