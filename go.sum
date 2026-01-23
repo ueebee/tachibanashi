@@ -1,2 +1,4 @@
 golang.org/x/text v0.33.0 h1:B3njUFyqtHDUI5jMn1YIr5B0IE2U0qck04r6d4KPAxE=
 golang.org/x/text v0.33.0/go.mod h1:LuMebE6+rBincTi9+xWTY8TztLzKHc/9C1uBCG27+q8=
+nhooyr.io/websocket v1.8.14 h1:3gKlV2P9bMu1U85zh1T2yLOmseFbRTbnYVOprNSEYKQ=
+nhooyr.io/websocket v1.8.14/go.mod h1:rN9OFWIUwuxg4fR5tELlYC04bXYowCP9GX47ivo2l+c=

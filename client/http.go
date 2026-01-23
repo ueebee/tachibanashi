@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -15,7 +16,6 @@ import (
 	"unicode/utf8"
 
 	terrors "github.com/ueebee/tachibanashi/errors"
-	"github.com/ueebee/tachibanashi/event"
 	"golang.org/x/text/encoding/japanese"
 	"golang.org/x/text/transform"
 )
@@ -99,8 +99,69 @@ func (c *Client) DoJSON(ctx context.Context, method, path string, req, resp any)
 	return nil
 }
 
-func (c *Client) DialEvent(ctx context.Context) (event.Conn, error) {
-	return nil, terrors.ErrNotImplemented
+func (c *Client) DoStream(ctx context.Context, method, path string, req any) (*http.Response, io.Reader, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if method == "" {
+		method = http.MethodGet
+	}
+	if path == "" {
+		return nil, nil, errors.New("tachibanashi: path is empty")
+	}
+
+	fullURL, err := c.resolveURL(path)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	payload, err := c.preparePayload(req)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body io.Reader
+	if method == http.MethodGet || method == http.MethodHead {
+		if len(payload) > 0 {
+			fullURL, err = appendJSONQuery(fullURL, payload)
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+	} else if len(payload) > 0 {
+		body = bytes.NewReader(payload)
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, method, fullURL, body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if c.cfg.UserAgent != "" {
+		httpReq.Header.Set("User-Agent", c.cfg.UserAgent)
+	}
+	httpReq.Header.Set("Accept", "application/json")
+	if body != nil {
+		httpReq.Header.Set("Content-Type", "application/json")
+	}
+
+	httpResp, err := c.http.Do(httpReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if httpResp.StatusCode >= http.StatusBadRequest {
+		respBody, readErr := io.ReadAll(httpResp.Body)
+		httpResp.Body.Close()
+		if readErr != nil {
+			return nil, nil, readErr
+		}
+		respBody = decodeResponseBody(httpResp, respBody)
+		return nil, nil, &terrors.HTTPError{Status: httpResp.StatusCode, Body: respBody}
+	}
+
+	reader := decodeResponseReader(httpResp, httpResp.Body)
+	return httpResp, reader, nil
 }
 
 func (c *Client) resolveURL(path string) (string, error) {
@@ -242,6 +303,28 @@ func decodeResponseBody(resp *http.Response, body []byte) []byte {
 		if decoded, err := decodeShiftJIS(body); err == nil {
 			return decoded
 		}
+	}
+	return body
+}
+
+func decodeResponseReader(resp *http.Response, body io.Reader) io.Reader {
+	if body == nil {
+		return body
+	}
+	charset := responseCharset(resp)
+	if charset == "" {
+		reader := bufio.NewReader(body)
+		peek, err := reader.Peek(4096)
+		if err == nil && len(peek) > 0 && !utf8.Valid(peek) {
+			return transform.NewReader(reader, japanese.ShiftJIS.NewDecoder())
+		}
+		return reader
+	}
+	if isUTF8Charset(charset) {
+		return body
+	}
+	if isShiftJISCharset(charset) {
+		return transform.NewReader(body, japanese.ShiftJIS.NewDecoder())
 	}
 	return body
 }

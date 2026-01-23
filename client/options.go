@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ueebee/tachibanashi/auth"
+	"github.com/ueebee/tachibanashi/event"
 )
 
 type Option func(*Config)
@@ -42,5 +43,11 @@ func WithTokenStore(store auth.TokenStore) Option {
 func WithLogger(logger Logger) Option {
 	return func(c *Config) {
 		c.Logger = logger
+	}
+}
+
+func WithEventParams(params event.Params) Option {
+	return func(c *Config) {
+		c.EventParams = params
 	}
 }

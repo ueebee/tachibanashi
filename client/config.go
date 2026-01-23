@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ueebee/tachibanashi/auth"
+	"github.com/ueebee/tachibanashi/event"
 )
 
 const (
@@ -20,10 +21,11 @@ type Logger interface {
 }
 
 type Config struct {
-	BaseURL    string
-	Timeout    time.Duration
-	UserAgent  string
-	HTTPClient *http.Client
-	Logger     Logger
-	TokenStore auth.TokenStore
+	BaseURL     string
+	Timeout     time.Duration
+	UserAgent   string
+	HTTPClient  *http.Client
+	Logger      Logger
+	TokenStore  auth.TokenStore
+	EventParams event.Params
 }

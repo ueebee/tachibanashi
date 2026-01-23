@@ -17,6 +17,11 @@ type Client struct {
 	token  auth.TokenStore
 	urlsMu sync.RWMutex
 	urls   auth.VirtualURLs
+
+	eventMu     sync.Mutex
+	eventActive bool
+	eventParams event.Params
+	eventEno    int64
 }
 
 func New(cfg Config, opts ...Option) (*Client, error) {
@@ -41,9 +46,10 @@ func New(cfg Config, opts ...Option) (*Client, error) {
 	}
 
 	return &Client{
-		cfg:   cfg,
-		http:  cfg.HTTPClient,
-		token: cfg.TokenStore,
+		cfg:         cfg,
+		http:        cfg.HTTPClient,
+		token:       cfg.TokenStore,
+		eventParams: cfg.EventParams,
 	}, nil
 }
 

@@ -43,6 +43,7 @@ type VirtualURLs struct {
 	Master  string `json:"sUrlMaster"`
 	Price   string `json:"sUrlPrice"`
 	Event   string `json:"sUrlEvent"`
+	EventWS string `json:"sUrlEventWebSocket"`
 }
 
 type LoginResponse struct {
@@ -136,7 +137,7 @@ func (s *Service) VirtualURL(ctx context.Context) (*VirtualURLs, error) {
 }
 
 func (v VirtualURLs) isZero() bool {
-	return v.Request == "" && v.Master == "" && v.Price == "" && v.Event == ""
+	return v.Request == "" && v.Master == "" && v.Price == "" && v.Event == "" && v.EventWS == ""
 }
 
 func parseInt64(value string) (int64, error) {

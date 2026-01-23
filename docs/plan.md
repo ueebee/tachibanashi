@@ -79,32 +79,32 @@
 - [x] 静的/動的マスタの分類確定（静的: SystemStatus/DateZyouhou/UnyouStatus/Yobine/DaiyouKakeme/HosyoukinMst/OrderErrReason）
 
 #### 4-1-1) 通信・パース基盤
-- [ ] CLMEventDownload 要求モデル定義（共通項目 + sCLMID）
-- [ ] CLMEventDownload 送信メソッド（MASTER 仮想URL）
-- [ ] 受信フレームの分割・JSON デコード
-- [ ] 受信メッセージのディスパッチ（sCLMID でルーティング）
-- [ ] 初期ダウンロード受信ループ（CLMEventDownloadComplete まで）
+- [x] CLMEventDownload 要求モデル定義（共通項目 + sCLMID）
+- [x] CLMEventDownload 送信メソッド（MASTER 仮想URL）
+- [x] 受信フレームの分割・JSON デコード
+- [x] 受信メッセージのディスパッチ（sCLMID でルーティング）
+- [x] 初期ダウンロード受信ループ（CLMEventDownloadComplete まで）
 - [ ] 初期完了後の更新通知処理（UPDATE 差分反映）
 - [ ] TODO: 初期完了後も接続を維持して更新通知を受け続けるモード（将来対応）
-- [ ] エラー応答（p_errno/p_err）処理
-- [ ] 文字コード正規化（Shift_JIS → UTF-8 前提の確認）
-- [ ] テスト: 連続配信のパース / 完了通知 / 更新反映
+- [x] エラー応答（p_errno/p_err）処理
+- [x] 文字コード正規化（Shift_JIS → UTF-8 前提の確認）
+- [x] テスト: 連続配信のパース / 完了通知 / 更新反映
 
 #### 4-1-2) マスタストア / 更新処理
-- [ ] MasterStore インターフェース（Get/Upsert/Delete/All）
-- [ ] インメモリ実装（種別ごとに map + index）
+- [x] MasterStore インターフェース（Get/Upsert/Delete/All）
+- [x] インメモリ実装（種別ごとに map + index）
 - [ ] 主キー抽出関数（マスタ種別ごと）
-- [ ] 更新通番/削除フラグの優先ルール（更新通番優先、同値は更新日時）
-- [ ] 参照用インデックス（銘柄コード/市場/口座区分など）
-- [ ] スナップショット取得 API（読み取り用）
-- [ ] テスト: Upsert/Delete とインデックス整合性
+- [x] 更新通番/削除フラグの優先ルール（更新通番優先、同値は更新日時）
+- [x] 参照用インデックス（銘柄コード/市場/口座区分など）
+- [x] スナップショット取得 API（読み取り用）
+- [x] テスト: Upsert/Delete とインデックス整合性
 - [ ] TODO: 変更通知（購読型）インターフェース
 
 #### 4-1-3) 運用系マスタ（spec 2-1〜2-4）
 - [ ] CLMSystemStatus: 項目一覧抽出 / 主キー決定
 - [ ] CLMSystemStatus: モデル定義 / パース / 格納 / テスト
-- [ ] CLMDateZyouhou: 項目一覧抽出 / 主キー決定
-- [ ] CLMDateZyouhou: モデル定義 / パース / 格納 / テスト
+- [x] CLMDateZyouhou: 項目一覧抽出 / 主キー決定
+- [x] CLMDateZyouhou: モデル定義 / パース / 格納 / テスト
 - [ ] CLMUnyouStatus: 項目一覧抽出 / 主キー決定
 - [ ] CLMUnyouStatus: モデル定義 / パース / 格納 / テスト
 - [ ] CLMUnyouStatusKabu: 項目一覧抽出 / 主キー決定
@@ -208,46 +208,67 @@
 - [x] Service/Conn 骨格
 
 #### 6-0) 仕様確認 / 方針決定
-- [ ] URL パラメータ仕様の整理（p_rid/p_board_no/p_gyou_no/p_issue_code/p_mkt_code/p_eno/p_evt_cmd）
-- [ ] p_evt_cmd 対応範囲の決定（ST/KP/FD/EC/NS/SS/US のみ）
-- [ ] p_eno の再送ルール整理（EC/NS/SS/US）
-- [ ] Base64 対象項目の確認（Shift_JIS 代替）
-- [ ] RR/FC 非公開通知は未対応と明記
+- [x] 接続方式は WebSocket（sUrlEventWebSocket）を使用
+- [x] URL パラメータ仕様の整理（p_rid/p_board_no/p_gyou_no/p_issue_code/p_mkt_code/p_eno/p_evt_cmd）
+- [x] p_evt_cmd 対応範囲の決定（ST/KP/FD/EC/NS/SS/US のみ）
+- [x] p_eno の再送ルール整理（EC/NS/SS/US）
+- [x] Base64 対象項目の確認（Shift_JIS 代替）
+- [x] RR/FC 非公開通知は未対応と明記
+
+URL パラメータまとめ（EVENT WebSocket / HTTP 共通）
+- p_rid: アプリ機能識別。API 利用は 0（時価配信なし）/ 22（時価配信あり）。他は株価ボード画面向け。
+- p_board_no: ボード番号。API は 1000、画面系は 1-10/120 など。
+- p_gyou_no: 行番号（1-120）。必要時のみ指定、カンマ区切りで複数可。
+- p_issue_code: 銘柄コード（最大 120）。必要時のみ、p_gyou_no と同数でカンマ区切り。
+- p_mkt_code: 市場コード（最大 120）。必要時のみ、p_issue_code と同数でカンマ区切り。
+- p_eno: 再送開始番号。指定番号の次から送信、0 は全件。
+- p_evt_cmd: 通知種別のカンマ区切り（ST/KP/FD/EC/NS/SS/US）。
+
+p_eno 再送ルール
+- 対象通知: EC/NS/SS/US のみ（ST/KP/FD は無関係）
+- 0 を指定すると当日未削除通知を全再送（通知削除機能は非公開）
+- 0 以外は指定番号の「次」から送信（p_ENO はユニークだが連番ではない）
+- 再接続時は直近の p_ENO を引き継ぐ想定（重複回避のベストエフォート）
+
+Base64 対象項目（WebSocket 版）
+- EC: p_IN（銘柄名称）
+- NS: p_HDL（ニュースタイトル）, p_TX（ニュース本文）
+- FD: Shift_JIS を含む値は x_ プレフィックスの16進表現で送信（Base64 ではない）
 
 #### 6-1) URL / パラメータ検証
-- [ ] WS URL ビルダ（パラメータ省略とデフォルト）
-- [ ] パラメータ検証（p_evt_cmd/最大120銘柄/ボード組合せ）
-- [ ] board/row 指定の組合せサポート（p_board_no/p_gyou_no/p_issue_code/p_mkt_code）
+- [x] WS URL ビルダ（パラメータ省略とデフォルト）
+- [x] パラメータ検証（p_evt_cmd/最大120銘柄/ボード組合せ）
+- [x] board/row 指定の組合せサポート（p_board_no/p_gyou_no/p_issue_code/p_mkt_code）
 
 #### 6-2) 接続・再接続・セッション
-- [ ] 接続/切断/再接続（コンテキスト停止・バックオフ）
-- [ ] keepalive（KP 受信/送信扱い）
-- [ ] 1セッション制約（重複接続ガード）
-- [ ] p_eno レジューム（再送開始番号の管理）
+- [x] 接続/切断/再接続（コンテキスト停止・バックオフ）
+- [x] keepalive（KP 受信/送信扱い）
+- [x] 1セッション制約（重複接続ガード）
+- [x] p_eno レジューム（再送開始番号の管理）
 
 #### 6-3) フレームデコード / 共通処理
-- [ ] 受信フレームのデコード（^A/^B/^C 区切り）
-- [ ] 共通項目パース（p_no/p_date/p_cmd）
-- [ ] Base64 デコード（WebSocket は Shift_JIS を扱えないため）
-- [ ] イベントディスパッチ（p_cmd でルーティング）
-- [ ] 共通テスト（区切りパース/Base64/必須項目）
+- [x] 受信フレームのデコード（^A/^B/^C 区切り）
+- [x] 共通項目パース（p_no/p_date/p_cmd）
+- [x] Base64 デコード（WebSocket は Shift_JIS を扱えないため）
+- [x] イベントディスパッチ（p_cmd でルーティング）
+- [x] 共通テスト（区切りパース/Base64/必須項目）
 
 #### 6-4) ST / KP
-- [ ] ST: 通知モデル定義（必須項目）
-- [ ] ST: パース/テスト
-- [ ] KP: 通知モデル定義
-- [ ] KP: パース/テスト
+- [x] ST: 通知モデル定義（必須項目）
+- [x] ST: パース/テスト
+- [x] KP: 通知モデル定義
+- [x] KP: パース/テスト
 
 #### 6-5) FD（時価情報）
-- [ ] FD: 情報コード一覧（p_*/t_*）のパース
-- [ ] FD: 初回スナップショット/差分更新の扱い
-- [ ] FD: Quote/QuoteSnapshot 変換
-- [ ] FD: テスト（初回/差分/複数銘柄）
+- [x] FD: 情報コード一覧（p_*/t_*）のパース
+- [x] FD: 初回スナップショット/差分更新の扱い
+- [x] FD: Quote/QuoteSnapshot 変換
+- [x] FD: テスト（初回/差分/複数銘柄）
 
 #### 6-6) EC（注文約定通知）
-- [ ] EC: 通知モデル定義（親注文番号/注文種別含む）
-- [ ] EC: パース/テスト
-- [ ] EC: Order/Execution へのマッピング
+- [x] EC: 通知モデル定義（親注文番号/注文種別含む）
+- [x] EC: パース/テスト
+- [x] EC: Order/Execution へのマッピング
 
 #### 6-7) NS（ニュース通知）
 - [ ] NS: 通知モデル定義
