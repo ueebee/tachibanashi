@@ -89,3 +89,30 @@ func TestDownloadKeepsFields(t *testing.T) {
 		t.Fatalf("expected key 001")
 	}
 }
+
+func TestDownloadStreamContinuesAfterComplete(t *testing.T) {
+	stream := strings.Join([]string{
+		`{"sCLMID":"CLMDateZyouhou","sDayKey":"001","sTheDay":"20240101","sUpdateTime":"20240101120000","sUpdateNumber":"1","sDeleteFlag":"0"}`,
+		`{"sCLMID":"CLMEventDownloadComplete","sResultCode":"0","sResultText":""}`,
+		`{"sCLMID":"CLMDateZyouhou","sDayKey":"001","sTheDay":"20240102","sUpdateTime":"20240102120000","sUpdateNumber":"2","sDeleteFlag":"0"}`,
+		"",
+	}, "\n")
+
+	service := NewService(&streamClient{data: stream})
+	store := NewMemoryStore()
+
+	if err := service.DownloadStream(context.Background(), store, nil); err != nil {
+		t.Fatalf("DownloadStream() error = %v", err)
+	}
+
+	record, ok := store.Get(MasterDateZyouhou, "001")
+	if !ok {
+		t.Fatalf("record not stored")
+	}
+	if got := record.Fields.Value(DateInfoFieldTheDay); got != "20240102" {
+		t.Fatalf("record field mismatch: %v", got)
+	}
+	if record.Meta.Serial != 2 {
+		t.Fatalf("record meta serial mismatch: %v", record.Meta.Serial)
+	}
+}

@@ -55,6 +55,17 @@ type DownloadHandler func(message DownloadMessage) error
 // Download streams master data until CLMEventDownloadComplete is received.
 // Either store or handler must be provided.
 func (s *Service) Download(ctx context.Context, store MasterStore, handler DownloadHandler) error {
+	return s.download(ctx, store, handler, true)
+}
+
+// DownloadStream keeps the connection after CLMEventDownloadComplete
+// and applies subsequent update messages until EOF or context cancellation.
+// Either store or handler must be provided.
+func (s *Service) DownloadStream(ctx context.Context, store MasterStore, handler DownloadHandler) error {
+	return s.download(ctx, store, handler, false)
+}
+
+func (s *Service) download(ctx context.Context, store MasterStore, handler DownloadHandler, stopOnComplete bool) error {
 	if store == nil && handler == nil {
 		return &terrors.ValidationError{Field: "handler", Reason: "store or handler required"}
 	}
@@ -95,7 +106,10 @@ func (s *Service) Download(ctx context.Context, store MasterStore, handler Downl
 					return err
 				}
 			}
-			return nil
+			if stopOnComplete {
+				return nil
+			}
+			continue
 		}
 
 		if store != nil && message.Key != "" {

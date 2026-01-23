@@ -84,8 +84,8 @@
 - [x] 受信フレームの分割・JSON デコード
 - [x] 受信メッセージのディスパッチ（sCLMID でルーティング）
 - [x] 初期ダウンロード受信ループ（CLMEventDownloadComplete まで）
-- [ ] 初期完了後の更新通知処理（UPDATE 差分反映）
-- [ ] TODO: 初期完了後も接続を維持して更新通知を受け続けるモード（将来対応）
+- [x] 初期完了後の更新通知処理（UPDATE 差分反映）
+- [x] 初期完了後も接続を維持して更新通知を受け続けるモード（DownloadStream）
 - [x] エラー応答（p_errno/p_err）処理
 - [x] 文字コード正規化（Shift_JIS → UTF-8 前提の確認）
 - [x] テスト: 連続配信のパース / 完了通知 / 更新反映
@@ -93,7 +93,7 @@
 #### 4-1-2) マスタストア / 更新処理
 - [x] MasterStore インターフェース（Get/Upsert/Delete/All）
 - [x] インメモリ実装（種別ごとに map + index）
-- [ ] 主キー抽出関数（マスタ種別ごと）
+- [x] 主キー抽出関数（マスタ種別ごと）
 - [x] 更新通番/削除フラグの優先ルール（更新通番優先、同値は更新日時）
 - [x] 参照用インデックス（銘柄コード/市場/口座区分など）
 - [x] スナップショット取得 API（読み取り用）
@@ -101,16 +101,16 @@
 - [ ] TODO: 変更通知（購読型）インターフェース
 
 #### 4-1-3) 運用系マスタ（spec 2-1〜2-4）
-- [ ] CLMSystemStatus: 項目一覧抽出 / 主キー決定
-- [ ] CLMSystemStatus: モデル定義 / パース / 格納 / テスト
+- [x] CLMSystemStatus: 項目一覧抽出 / 主キー決定
+- [x] CLMSystemStatus: モデル定義 / パース / 格納 / テスト
 - [x] CLMDateZyouhou: 項目一覧抽出 / 主キー決定
 - [x] CLMDateZyouhou: モデル定義 / パース / 格納 / テスト
-- [ ] CLMUnyouStatus: 項目一覧抽出 / 主キー決定
-- [ ] CLMUnyouStatus: モデル定義 / パース / 格納 / テスト
-- [ ] CLMUnyouStatusKabu: 項目一覧抽出 / 主キー決定
-- [ ] CLMUnyouStatusKabu: モデル定義 / UPDATE 反映 / テスト
-- [ ] CLMUnyouStatusHasei: 項目一覧抽出 / 主キー決定
-- [ ] CLMUnyouStatusHasei: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMUnyouStatus: 項目一覧抽出 / 主キー決定
+- [x] CLMUnyouStatus: モデル定義 / パース / 格納 / テスト
+- [x] CLMUnyouStatusKabu: 項目一覧抽出 / 主キー決定
+- [x] CLMUnyouStatusKabu: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMUnyouStatusHasei: 項目一覧抽出 / 主キー決定
+- [x] CLMUnyouStatusHasei: モデル定義 / UPDATE 反映 / テスト
 
 #### 4-1-4) 銘柄系マスタ（spec 2-6〜2-11）
 - [ ] CLMIssueMstKabu: 項目一覧抽出 / 主キー決定
