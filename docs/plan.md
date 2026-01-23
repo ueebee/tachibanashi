@@ -185,11 +185,11 @@
 - [x] テスト: 逆日歩フィールドのパース
 
 ## 5) 時価 I/F（api_request_if_v4r7 / mfds_json_api_refference）
-- [ ] 共通: Request/Response ラッパ（PRICE 仮想URL）
-- [ ] 共通: 文字コード正規化（Shift_JIS → UTF-8 前提）
-- [ ] 共通: sTargetIssueCode 最大120件のバリデーション
-- [ ] 共通: sTargetColumn（情報コード一覧）との整合確認
-- [ ] 共通: ユニットテスト（リクエスト/レスポンス）
+- [x] 共通: Request/Response ラッパ（PRICE 仮想URL）
+- [x] 共通: 文字コード正規化（Shift_JIS → UTF-8 前提）
+- [x] 共通: sTargetIssueCode 最大120件のバリデーション
+- [x] 共通: sTargetColumn（情報コード一覧）との整合確認
+- [x] 共通: ユニットテスト（リクエスト/レスポンス）
 
 #### 5-1) CLMMfdsGetMarketPrice（時価スナップショット）
 - [x] 要求モデル: sTargetIssueCode / sTargetColumn

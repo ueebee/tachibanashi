@@ -131,6 +131,11 @@ func (s *Service) Snapshot(ctx context.Context, issueCodes []string, columns []s
 	if len(cols) == 0 {
 		return nil, &terrors.ValidationError{Field: "columns", Reason: "required"}
 	}
+	for _, col := range cols {
+		if !IsValidQuoteField(col) {
+			return nil, &terrors.ValidationError{Field: "columns", Reason: "invalid field: " + col}
+		}
+	}
 
 	urls := s.client.VirtualURLs()
 	if urls.Price == "" {

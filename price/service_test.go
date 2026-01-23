@@ -183,3 +183,14 @@ func TestHistoryRejectsMultipleIssues(t *testing.T) {
 		t.Fatalf("expected error for multiple issue codes")
 	}
 }
+
+func TestSnapshotRejectsInvalidColumns(t *testing.T) {
+	client := &mockClient{
+		urls: auth.VirtualURLs{Price: "https://example.invalid/price"},
+	}
+	svc := NewService(client)
+
+	if _, err := svc.Snapshot(context.Background(), []string{"6501"}, []string{"bad"}); err == nil {
+		t.Fatalf("expected error for invalid column")
+	}
+}
