@@ -113,18 +113,18 @@
 - [x] CLMUnyouStatusHasei: モデル定義 / UPDATE 反映 / テスト
 
 #### 4-1-4) 銘柄系マスタ（spec 2-6〜2-11）
-- [ ] CLMIssueMstKabu: 項目一覧抽出 / 主キー決定
-- [ ] CLMIssueMstKabu: モデル定義 / UPDATE 反映 / テスト
-- [ ] CLMIssueSizyouMstKabu: 項目一覧抽出 / 主キー決定
-- [ ] CLMIssueSizyouMstKabu: モデル定義 / UPDATE 反映 / テスト
-- [ ] CLMIssueSizyouKiseiKabu: 項目一覧抽出 / 主キー決定
-- [ ] CLMIssueSizyouKiseiKabu: モデル定義 / UPDATE 反映 / テスト
-- [ ] CLMIssueMstSak: 項目一覧抽出 / 主キー決定
-- [ ] CLMIssueMstSak: モデル定義 / UPDATE 反映 / テスト
-- [ ] CLMIssueMstOp: 項目一覧抽出 / 主キー決定
-- [ ] CLMIssueMstOp: モデル定義 / UPDATE 反映 / テスト
-- [ ] CLMIssueSizyouKiseiHasei: 項目一覧抽出 / 主キー決定
-- [ ] CLMIssueSizyouKiseiHasei: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMIssueMstKabu: 項目一覧抽出 / 主キー決定
+- [x] CLMIssueMstKabu: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMIssueSizyouMstKabu: 項目一覧抽出 / 主キー決定
+- [x] CLMIssueSizyouMstKabu: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMIssueSizyouKiseiKabu: 項目一覧抽出 / 主キー決定
+- [x] CLMIssueSizyouKiseiKabu: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMIssueMstSak: 項目一覧抽出 / 主キー決定
+- [x] CLMIssueMstSak: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMIssueMstOp: 項目一覧抽出 / 主キー決定
+- [x] CLMIssueMstOp: モデル定義 / UPDATE 反映 / テスト
+- [x] CLMIssueSizyouKiseiHasei: 項目一覧抽出 / 主キー決定
+- [x] CLMIssueSizyouKiseiHasei: モデル定義 / UPDATE 反映 / テスト
 
 #### 4-1-5) 静的マスタ（spec 2-12〜2-15）
 - [ ] CLMYobine: 項目一覧抽出 / 主キー決定
