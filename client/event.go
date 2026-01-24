@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -220,9 +219,6 @@ func (c *wsConn) readMessage(ctx context.Context, conn *websocket.Conn) ([]byte,
 
 		messageType, data, err := conn.ReadMessage()
 		if err != nil {
-			if netErr, ok := err.(net.Error); ok && netErr.Timeout() && ctx.Err() == nil {
-				continue
-			}
 			return nil, err
 		}
 		if messageType != websocket.TextMessage && messageType != websocket.BinaryMessage {
