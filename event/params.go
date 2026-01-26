@@ -36,6 +36,16 @@ var defaultCommands = []Command{
 	CommandUS,
 }
 
+var defaultBoardCommands = []Command{
+	CommandST,
+	CommandKP,
+	CommandFD,
+	CommandEC,
+	CommandNS,
+	CommandSS,
+	CommandUS,
+}
+
 var allowedCommands = map[Command]struct{}{
 	CommandST: {},
 	CommandKP: {},
@@ -114,14 +124,20 @@ func BuildWSURL(base string, params Params) (string, error) {
 
 func normalizeParams(p Params) Params {
 	out := p
-	out.Cmds = normalizeCommands(out.Cmds)
-	if len(out.Cmds) == 0 {
-		out.Cmds = append([]Command(nil), defaultCommands...)
-	}
-
 	out.Rows = normalizeIntList(out.Rows)
 	out.IssueCodes = normalizeCodeList(out.IssueCodes)
 	out.MarketCodes = normalizeCodeList(out.MarketCodes)
+	if len(out.Rows) == 0 && len(out.IssueCodes) > 0 {
+		out.Rows = make([]int, len(out.IssueCodes))
+		for i := range out.Rows {
+			out.Rows[i] = i + 1
+		}
+	}
+
+	out.Cmds = normalizeCommands(out.Cmds)
+	if len(out.Cmds) == 0 {
+		out.Cmds = append([]Command(nil), defaultCommandsFor(out)...)
+	}
 
 	if out.RID == 0 && (len(out.Rows) > 0 || len(out.IssueCodes) > 0 || len(out.MarketCodes) > 0) {
 		out.RID = 22
@@ -130,6 +146,13 @@ func normalizeParams(p Params) Params {
 		out.BoardNo = defaultBoardNo
 	}
 	return out
+}
+
+func defaultCommandsFor(p Params) []Command {
+	if len(p.Rows) > 0 || len(p.IssueCodes) > 0 || len(p.MarketCodes) > 0 {
+		return defaultBoardCommands
+	}
+	return defaultCommands
 }
 
 func normalizeCommands(cmds []Command) []Command {

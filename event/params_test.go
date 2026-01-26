@@ -71,6 +71,50 @@ func TestBuildWSURLRID22(t *testing.T) {
 	}
 }
 
+func TestBuildWSURLAutoRowsFromIssueCodes(t *testing.T) {
+	params := Params{
+		RID:         22,
+		BoardNo:     1000,
+		IssueCodes:  []string{"6501", "6502", "6503"},
+		MarketCodes: []string{"00", "00", "00"},
+		Cmds:        []Command{CommandFD},
+	}
+	got, err := BuildWSURL("wss://example.invalid/ws", params)
+	if err != nil {
+		t.Fatalf("BuildWSURL() error = %v", err)
+	}
+	parsed, err := url.Parse(got)
+	if err != nil {
+		t.Fatalf("url.Parse() error = %v", err)
+	}
+	query := parsed.Query()
+	if query.Get("p_gyou_no") != "1,2,3" {
+		t.Fatalf("p_gyou_no = %s", query.Get("p_gyou_no"))
+	}
+}
+
+func TestBuildWSURLDefaultCommandsForBoard(t *testing.T) {
+	params := Params{
+		RID:         22,
+		BoardNo:     1000,
+		Rows:        []int{1},
+		IssueCodes:  []string{"6501"},
+		MarketCodes: []string{"00"},
+	}
+	got, err := BuildWSURL("wss://example.invalid/ws", params)
+	if err != nil {
+		t.Fatalf("BuildWSURL() error = %v", err)
+	}
+	parsed, err := url.Parse(got)
+	if err != nil {
+		t.Fatalf("url.Parse() error = %v", err)
+	}
+	query := parsed.Query()
+	if query.Get("p_evt_cmd") != "ST,KP,FD,EC,NS,SS,US" {
+		t.Fatalf("p_evt_cmd = %s", query.Get("p_evt_cmd"))
+	}
+}
+
 func TestValidateRejectFDWithRID0(t *testing.T) {
 	_, err := BuildWSURL("wss://example.invalid/ws", Params{
 		Cmds: []Command{CommandFD},
