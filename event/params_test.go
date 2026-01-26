@@ -74,7 +74,6 @@ func TestBuildWSURLRID22(t *testing.T) {
 func TestBuildWSURLAutoRowsFromIssueCodes(t *testing.T) {
 	params := Params{
 		RID:         22,
-		BoardNo:     1000,
 		IssueCodes:  []string{"6501", "6502", "6503"},
 		MarketCodes: []string{"00", "00", "00"},
 		Cmds:        []Command{CommandFD},
@@ -90,6 +89,27 @@ func TestBuildWSURLAutoRowsFromIssueCodes(t *testing.T) {
 	query := parsed.Query()
 	if query.Get("p_gyou_no") != "1,2,3" {
 		t.Fatalf("p_gyou_no = %s", query.Get("p_gyou_no"))
+	}
+}
+
+func TestBuildWSURLDefaultBoardNoRID22(t *testing.T) {
+	params := Params{
+		RID:         22,
+		IssueCodes:  []string{"6501"},
+		MarketCodes: []string{"00"},
+		Cmds:        []Command{CommandFD},
+	}
+	got, err := BuildWSURL("wss://example.invalid/ws", params)
+	if err != nil {
+		t.Fatalf("BuildWSURL() error = %v", err)
+	}
+	parsed, err := url.Parse(got)
+	if err != nil {
+		t.Fatalf("url.Parse() error = %v", err)
+	}
+	query := parsed.Query()
+	if query.Get("p_board_no") != "1000" {
+		t.Fatalf("p_board_no = %s", query.Get("p_board_no"))
 	}
 }
 
