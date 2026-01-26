@@ -142,7 +142,7 @@ func normalizeParams(p Params) Params {
 	if out.RID == 0 && (len(out.Rows) > 0 || len(out.IssueCodes) > 0 || len(out.MarketCodes) > 0) {
 		out.RID = 22
 	}
-	if out.RID == 0 && out.BoardNo == 0 {
+	if out.BoardNo == 0 && (out.RID == 0 || out.RID == 22) {
 		out.BoardNo = defaultBoardNo
 	}
 	return out
