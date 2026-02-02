@@ -161,7 +161,7 @@ func (c *wsConn) reconnect(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		dialer := c.parent.wsDialer()
+		dialer := c.parent.wsDialer(url)
 		conn, _, err := dialer.DialContext(ctx, url, nil)
 		if err == nil {
 			c.setConn(conn)
@@ -235,7 +235,7 @@ func (c *Client) logf(format string, args ...any) {
 	c.cfg.Logger.Printf(format, args...)
 }
 
-func (c *Client) wsDialer() *websocket.Dialer {
+func (c *Client) wsDialer(targetURL string) *websocket.Dialer {
 	dialer := *websocket.DefaultDialer
 	dialer.HandshakeTimeout = c.cfg.Timeout
 	if transport, ok := c.http.Transport.(*http.Transport); ok && transport != nil {
@@ -249,9 +249,12 @@ func (c *Client) wsDialer() *websocket.Dialer {
 		}
 	}
 	if dialer.TLSClientConfig == nil {
-		base := strings.TrimSpace(c.cfg.BaseURL)
-		if base != "" {
-			if parsed, err := url.Parse(base); err == nil && parsed.Scheme == "https" {
+		// Use the target WebSocket URL's hostname for TLS ServerName,
+		// not the base URL. This is important when eventWS uses a different
+		// host than the base API URL (e.g., price-kabuka.e-shiten.jp vs kabuka.e-shiten.jp)
+		wsURL := strings.TrimSpace(targetURL)
+		if wsURL != "" {
+			if parsed, err := url.Parse(wsURL); err == nil && (parsed.Scheme == "wss" || parsed.Scheme == "https") {
 				dialer.TLSClientConfig = &tls.Config{ServerName: parsed.Hostname()}
 			}
 		}
