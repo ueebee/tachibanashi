@@ -126,6 +126,7 @@ func (c *wsConn) Recv(ctx context.Context) (event.Event, error) {
 		if c.isClosed() {
 			return nil, err
 		}
+		c.parent.logf("event read error, reconnecting: %v", err)
 		c.dropConn(conn)
 		if err := c.reconnect(ctx); err != nil {
 			return nil, err
@@ -166,6 +167,7 @@ func (c *wsConn) reconnect(ctx context.Context) error {
 		conn, _, err := dialer.DialContext(ctx, url, nil)
 		if err == nil {
 			c.setConn(conn)
+			c.parent.logf("event reconnected successfully")
 			return nil
 		}
 
