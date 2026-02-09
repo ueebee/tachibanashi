@@ -20,6 +20,7 @@ import (
 const (
 	eventReconnectBase = time.Second
 	eventReconnectMax  = 30 * time.Second
+	eventReadTimeout   = 60 * time.Second
 )
 
 type wsConn struct {
@@ -214,7 +215,7 @@ func (c *wsConn) readMessage(ctx context.Context, conn *websocket.Conn) ([]byte,
 		if deadline, ok := ctx.Deadline(); ok {
 			_ = conn.SetReadDeadline(deadline)
 		} else {
-			_ = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+			_ = conn.SetReadDeadline(time.Now().Add(eventReadTimeout))
 		}
 
 		messageType, data, err := conn.ReadMessage()
